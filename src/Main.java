@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
+        Users.mainMenu();
     }
     ///////////////System Pause Method//////////////////////
     public static void pressEnterToContinue()
