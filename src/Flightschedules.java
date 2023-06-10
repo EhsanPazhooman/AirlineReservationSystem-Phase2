@@ -19,7 +19,7 @@ public class Flightschedules {
         Flightschedules flightschedules = new Flightschedules();
         flightschedules.writeFlightToFile();
         Main.pressEnterToContinue();
-        //Admin.adminMenu();
+        Admin.adminMenu();
     }
     /////////// Method for editing the features of a flight /////////////
     public void update() throws IOException {
@@ -77,7 +77,7 @@ public class Flightschedules {
             }
         }
         Main.pressEnterToContinue();
-        //Admin.adminMenu();
+        Admin.adminMenu();
     }
 
     //////////////// Method for removing flight ///////////////
@@ -101,7 +101,7 @@ public class Flightschedules {
         System.out.println("Flight with ID " + ID + " not found.");
 
         Main.pressEnterToContinue();
-        //Admin.adminMenu();
+        Admin.adminMenu();
     }
 
     //////////// Method for printing flight schedules ///////////
@@ -109,7 +109,7 @@ public class Flightschedules {
         Flightschedules flightschedules = new Flightschedules();
         flightschedules.readAllFlights();
         Main.pressEnterToContinue();
-        //Admin.adminMenu();
+        Admin.adminMenu();
     }
     ///////////////////////////////
     public void readAllFlights()throws IOException{
