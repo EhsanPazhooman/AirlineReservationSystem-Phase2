@@ -55,7 +55,7 @@ public class Tickets{
                         if (userRaf.readInt() < flightRaf.readInt()){
                             System.out.println("Please Charge your account");
                             Main.pressEnterToContinue();
-                            //Passenger.passengerMenu();
+                            Passenger.passengerMenu();
                         }
                         else if (userRaf.readInt() >= flightRaf.readInt()){
                             long userPos = userRaf.getFilePointer()-8;
