@@ -69,12 +69,12 @@ public class Users {
         if (input_username.equals("ehsan")&&input_password==1381){
             System.out.println("Welcome Admin");
             System.out.println();
-            //Admin.adminMenu();
+            Admin.adminMenu();
         }
 
         if(users.checkLogin(input_username,input_password)){
             System.out.println("User"+" "+input_username+" "+"login successfully");
-            //Passenger.passengerMenu();
+            Passenger.passengerMenu();
         }
 
         if(!users.checkLogin(input_username, input_password)){
@@ -115,7 +115,6 @@ public class Users {
         for (int i = 0; i<= raf.length()-48 ; i+=48) {
             raf.seek(i);
             if (input_username.equals(fixStringToRead())&&old_password==raf.readInt()){
-                System.out.println(raf.getFilePointer());
                 raf.seek(raf.getFilePointer()-4);
                 raf.writeInt(new_password);
                 System.out.println("Password has been changed");

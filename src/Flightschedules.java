@@ -1,19 +1,16 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 
 public class Flightschedules {
     static Scanner input = new Scanner(System.in);
     private RandomAccessFile raf = new RandomAccessFile("FLights.dat", "rw");
-    private static final int FIX_SIZE = 20;
 
+    private RandomAccessFile ticketRaf = new RandomAccessFile("tickets.dat","rw");
+    private static final int FIX_SIZE = 20;
     public Flightschedules() throws FileNotFoundException {
     }
-
-
     //////////////// Method for adding admin flights /////////////////
     public void addFlight() throws IOException {
         Flightschedules flightschedules = new Flightschedules();
@@ -25,7 +22,6 @@ public class Flightschedules {
     public void update() throws IOException {
         System.out.println("Enter the flight-id you want to update :");
         String ID = input.nextLine();
-        raf.seek(0);
         for (int i = 0; i < raf.length(); i+=208) {
             raf.seek(i);
             if (ID.equals(fixStringToRead()))
@@ -38,36 +34,41 @@ public class Flightschedules {
                 System.out.println("5-Price");
                 System.out.println("6-Seats");
                 String update = input.nextLine();
+
                 switch (update) {
                     case "1":
                         System.out.println("Enter your new Origin :");
                         String newOrigin = input.nextLine();
-                        raf.seek(i+20);
-                        fixStringToWrite(newOrigin);
+                        raf.writeChars(fixStringToWrite(newOrigin));
                         break;
                     case "2":
                         System.out.println("Enter your new Destination :");
                         String newDestination = input.nextLine();
-                        fixStringToWrite(newDestination);
+                        raf.seek(raf.getFilePointer()+40);
+                        raf.writeChars(fixStringToWrite(newDestination));
                         break;
                     case "3":
                         System.out.println("Enter your new Date :");
                         String newDate = input.nextLine();
-                        fixStringToWrite(newDate);
+                        raf.seek(raf.getFilePointer()+80);
+                        raf.writeChars(fixStringToWrite(newDate));
                         break;
                     case "4":
                         System.out.println("Enter your new Time : ");
                         String newTime = input.nextLine();
-                        fixStringToWrite(newTime);
+                        raf.seek(raf.getFilePointer()+120);
+                        raf.writeChars(fixStringToWrite(newTime));
                         break;
                     case "5":
                         System.out.println("Enter your new Price : ");
                         int newPrice = input.nextInt();
+                        raf.seek(raf.getFilePointer()+160);
                         raf.writeInt(newPrice);
                         break;
                     case "6":
                         System.out.println("Enter your new Seats : ");
                         int newSeats = input.nextInt();
+                        raf.seek(raf.getFilePointer()+164);
                         raf.writeInt(newSeats);
                         break;
                     default:
@@ -85,25 +86,30 @@ public class Flightschedules {
         System.out.println("Enter the flight-id you want to remove ?");
         String ID = input.nextLine();
 
-        for (int i = 0; i < raf.length(); i += 208) {
-            raf.seek(i);
-            if (fixStringToRead().equals(ID)){
-                raf.seek(raf.getFilePointer()-40);
-                raf.writeChars(fixStringToWrite(""));
-                raf.writeChars(fixStringToWrite(""));
-                raf.writeChars(fixStringToWrite(""));
-                raf.writeChars(fixStringToWrite(""));
-                raf.writeChars(fixStringToWrite(""));
-                raf.writeInt(0);
-                raf.writeInt(0);
+        for (int i=40 ; i <= ticketRaf.length()-208 ; i+=248) {
+            ticketRaf.seek(i);
+            if (fixStringToReadTicket().equals(ID)) {
+                System.out.println("You can't remove the reserved flight.");
+                Main.pressEnterToContinue();
+                Admin.adminMenu();
             }
         }
-        System.out.println("Flight with ID " + ID + " not found.");
-
+        for (int j = 0; j < raf.length(); j += 208) {
+                    raf.seek(j);
+                    if (fixStringToRead().equals(ID)) {
+                        raf.seek(raf.getFilePointer()-40);
+                        raf.writeChars(fixStringToWrite(""));
+                        raf.writeChars(fixStringToWrite(""));
+                        raf.writeChars(fixStringToWrite(""));
+                        raf.writeChars(fixStringToWrite(""));
+                        raf.writeChars(fixStringToWrite(""));
+                        raf.writeInt(0);
+                        raf.writeInt(0);
+                    }
+        }
         Main.pressEnterToContinue();
         Admin.adminMenu();
     }
-
     //////////// Method for printing flight schedules ///////////
     public void displayFlights() throws IOException {
         Flightschedules flightschedules = new Flightschedules();
@@ -112,7 +118,7 @@ public class Flightschedules {
         Admin.adminMenu();
     }
     ///////////////////////////////
-    public void readAllFlights()throws IOException{
+    public void readAllFlights() throws IOException{
         for (int i = 0; i < raf.length(); i+=208) {
             raf.seek(i);
             Flight flight = readFlightFromFile();
@@ -123,7 +129,7 @@ public class Flightschedules {
             }
         }
     }
-    /////////////////// Method for Writing in User File////////////
+    /////////////////// Method for Writing in Flights File////////////
     public void writeFlightToFile() throws IOException {
         System.out.println("Enter your flightId : ");
         String id = input.nextLine();
@@ -184,7 +190,14 @@ public class Flightschedules {
         }
         return tmp.trim();
     }
-    /////////////Method for Searching Flights According to Origin or Destination////////////
+    private String fixStringToReadTicket() throws IOException {
+        String tmp = "";
+        for (int i = 0; i < FIX_SIZE; i++) {
+            tmp += ticketRaf.readChar();
+        }
+        return tmp.trim();
+    }
+    ///////////// Method for Searching Flights According to Origin or Destination ////////////
     public void searchFlights() throws IOException {
         System.out.println("Which feature you want to search for ?");
         System.out.println("1-Origin");

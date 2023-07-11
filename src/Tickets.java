@@ -108,12 +108,35 @@ public class Tickets{
         int Id = scanner.nextInt();
         scanner.nextLine();
 
-        for (int i = 0; i < ticketRaf.length(); i+=248){
+        for (int i = 0; i < ticketRaf.length(); i += 248) {
             ticketRaf.seek(i);
-            if (fixStringToRead(ticketRaf).equals(Users.input_username)){
-                ticketRaf.seek(ticketRaf.getFilePointer()+204);
-                if (ticketRaf.readInt()==Id){
-                    ticketRaf.seek(ticketRaf.getFilePointer()-248);
+            if (fixStringToRead(ticketRaf).equals(Users.input_username)) {
+                ticketRaf.seek(ticketRaf.getFilePointer() + 204);
+                if (ticketRaf.readInt() == Id) {
+                    ticketRaf.seek(ticketRaf.getFilePointer() - 8);
+                    int refund = ticketRaf.readInt();
+                    ticketRaf.seek(ticketRaf.getFilePointer()-204);
+                    String flightid = fixStringToRead(ticketRaf);
+                    for (int j = 0; j < userRaf.length() ; j+=48) {
+                        userRaf.seek(j);
+                        if (fixStringToRead(userRaf).equals(Users.input_username)&&userRaf.readInt()==Users.input_password){
+                            int price = userRaf.readInt();
+                            price += refund;
+                            userRaf.seek(userRaf.getFilePointer()-4);
+                            userRaf.writeInt(price);
+                        }
+                    }
+                    for (int k =0; k < flightRaf.length();k+=208){
+                        flightRaf.seek(k);
+                        if (fixStringToRead(flightRaf).equals(flightid)){
+                            flightRaf.seek(flightRaf.getFilePointer()+164);
+                            int seat = flightRaf.readInt();
+                            int newseat = seat + 1;
+                            flightRaf.seek(flightRaf.getFilePointer()-4);
+                            flightRaf.writeInt(newseat);
+                        }
+                    }
+                    ticketRaf.seek(ticketRaf.getFilePointer()-80);
                     ticketRaf.writeChars(fixStringToWrite(""));
                     ticketRaf.writeChars(fixStringToWrite(""));
                     ticketRaf.writeChars(fixStringToWrite(""));
